@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "flutter": {
+    "defaultRunProfile": "dev_ios",
+    "defaultBuildProfile": "prod",
+    "profiles": {
+      "dev": {
+        "device": "web-server",
+        "webPort": 5173,
+        "dartDefineFromFile": "dart_defines.dev.json"
+      },
+      "dev_ios": {
+        "device": "ios",
+        "preferSimulator": true,
+        "dartDefineFromFile": "dart_defines.dev.json"
+      },
+      "beta": {
+        "dartDefineFromFile": "dart_defines.beta.json"
+      },
+      "prod": {
+        "dartDefineFromFile": "dart_defines.prod.json"
+      }
+    }
+  }
+}
