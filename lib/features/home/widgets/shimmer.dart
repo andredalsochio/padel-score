@@ -34,7 +34,7 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
         final t = _controller.value;
         return DecoratedBox(
           decoration: BoxDecoration(
-            gradient: HomeGradients.shimmer(t, scheme.surface, scheme.surfaceVariant),
+            gradient: HomeGradients.shimmer(t, scheme.surface, scheme.surfaceContainerHighest),
           ),
           child: child,
         );

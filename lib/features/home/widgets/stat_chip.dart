@@ -13,7 +13,7 @@ class StatChip extends StatelessWidget {
       margin: const EdgeInsets.only(right: 8),
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: scheme.surfaceVariant,
+        color: scheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import '../../auth/viewmodel/auth_view_model.dart';
 import '../widgets/greeting_header.dart';
 import '../widgets/section_header.dart';
@@ -29,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final authVm = context.watch<AuthViewModel>();
     final scheme = Theme.of(context).colorScheme;
-    final text = Theme.of(context).textTheme;
 
     return Scaffold(
       body: CustomScrollView(
@@ -78,9 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Icons.sports_tennis,
                     gradient: [scheme.primary, scheme.primaryContainer],
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Register Game — coming soon')),
-                      );
+                      context.push('/games/register');
                     },
                   ),
                   ActionCard(

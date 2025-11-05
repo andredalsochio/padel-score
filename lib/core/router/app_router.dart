@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/view/login_screen.dart';
 import '../../features/auth/viewmodel/auth_view_model.dart';
 import '../../features/home/view/home_screen.dart';
+import '../../features/games/register/view/register_game_screen.dart';
 
 GoRouter createAppRouter(AuthViewModel authVm) {
   return GoRouter(
@@ -30,6 +31,12 @@ GoRouter createAppRouter(AuthViewModel authVm) {
         path: '/home',
         pageBuilder: (context, state) => const MaterialPage<void>(
           child: HomeScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/games/register',
+        pageBuilder: (context, state) => const MaterialPage<void>(
+          child: RegisterGameScreen(),
         ),
       ),
     ],

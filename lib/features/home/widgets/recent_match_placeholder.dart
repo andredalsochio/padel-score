@@ -36,7 +36,7 @@ class RecentMatchPlaceholder extends StatelessWidget {
                 height: 12,
                 width: 180,
                 decoration: BoxDecoration(
-                  color: scheme.surfaceVariant,
+                  color: scheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
@@ -45,7 +45,7 @@ class RecentMatchPlaceholder extends StatelessWidget {
                 height: 12,
                 width: 240,
                 decoration: BoxDecoration(
-                  color: scheme.surfaceVariant,
+                  color: scheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),

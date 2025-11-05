@@ -12,6 +12,12 @@ When a session restarts or reconnects, the AI must automatically read from
 If any deviation or optimization is introduced during execution, it must be logged under  
 a “🧩 Adjustment Notes” section in the same document, describing what changed and why.
 
+#### 6. Verificação pós‑tarefa (Quality Gate)
+Ao finalizar qualquer tarefa:
+- Execute `flutter analyze`.
+- Corrija todos os erros e warnings reportados pelo analyzer antes de marcar a tarefa como concluída.
+- Registre no “🧩 Adjustment Notes” quaisquer alterações aplicadas para resolver problemas do analyzer.
+
 ---
 
 ## Feature: Login Screen (Supabase Auth)
