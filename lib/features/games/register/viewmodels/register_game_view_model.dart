@@ -3,7 +3,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../helpers/validators.dart';
 import '../models/set_assignment.dart';
 import '../services/games_service.dart';
-import '../services/players_service.dart';
+import '../../../players/data/player_repository.dart';
+import '../../../players/service/player_service.dart';
+import '../../../players/data/player_model.dart';
 import '../services/game_players_service.dart';
 import '../services/scores_service.dart';
 import '../services/score_set_players_service.dart';
@@ -11,14 +13,14 @@ import '../services/score_set_players_service.dart';
 class RegisterGameViewModel extends ChangeNotifier {
   final SupabaseClient client;
   final GamesService games;
-  final PlayersService players;
+  final PlayerRepository players;
   final GamePlayersService gamePlayers;
   final ScoresService scores;
   final ScoreSetPlayersService setPlayers;
 
   RegisterGameViewModel(this.client)
     : games = GamesService(client),
-      players = PlayersService(client),
+      players = PlayerRepository(PlayerService(client)),
       gamePlayers = GamePlayersService(client),
       scores = ScoresService(client),
       setPlayers = ScoreSetPlayersService(client);
@@ -53,23 +55,18 @@ class RegisterGameViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Map<String, dynamic>>> searchPlayers(String query) =>
+  Future<List<PlayerModel>> searchPlayers(String query) =>
       players.listMine(query: query);
 
-  Future<Map<String, dynamic>> createPlayer(String name) =>
-      players.create(name);
+  Future<PlayerModel> createPlayer(String name) => players.create(name: name);
 
-  Future<void> addPlayerToGame(Map<String, dynamic> player, {int? team}) async {
+  Future<void> addPlayerToGame(PlayerModel player, {int? team}) async {
     if (_gameId == null) return;
-    await gamePlayers.upsert(_gameId!, player['id'] as String, team: team);
-    final exists = _assignedPlayers.any((p) => p.id == player['id']);
+    await gamePlayers.upsert(_gameId!, player.id, team: team);
+    final exists = _assignedPlayers.any((p) => p.id == player.id);
     if (!exists) {
       _assignedPlayers.add(
-        AssignedPlayer(
-          id: player['id'] as String,
-          name: player['name'] as String,
-          team: team,
-        ),
+        AssignedPlayer(id: player.id, name: player.name, team: team),
       );
     }
     notifyListeners();
@@ -103,15 +100,7 @@ class RegisterGameViewModel extends ChangeNotifier {
     if (_gameId == null) return;
     if (_setAssignments.containsKey(setIndex)) return;
     // Load from backend
-    final rows = await setPlayers.listBySet(_gameId!, setIndex);
-    final entries = rows
-        .map(
-          (r) => SetPlayerEntry(
-            playerId: r['player_id'] as String,
-            team: r['team'] as int?,
-          ),
-        )
-        .toList();
+    final entries = await setPlayers.listBySet(_gameId!, setIndex);
     // If empty, initialize entries from current assigned players (no teams yet)
     if (entries.isEmpty) {
       for (final p in _assignedPlayers) {

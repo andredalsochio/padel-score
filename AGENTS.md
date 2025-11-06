@@ -96,6 +96,61 @@ mobile platforms.
   versions of the objects.
 * **Logging:** Use the `logging` package instead of `print`.
 
+
+### Typed Data Handling
+
+Avoid using untyped `Map<String, dynamic>` structures directly in UI code. Always prefer using strongly-typed model classes to represent your data, especially when passing data to widgets or building UI lists.
+
+* **Do not** access map fields directly in widgets or UI elements.
+* **Do** define model classes and use their properties for all UI rendering.
+* This improves code safety, enables better autocompletion, and catches errors at compile time.
+
+#### Example: Using `DropdownMenuItem` with Typed Models
+
+❌ **Bad (accessing map fields directly):**
+```dart
+final List<Map<String, dynamic>> clubs = [
+  {'id': 1, 'name': 'Padel Club'},
+  {'id': 2, 'name': 'Ace Arena'},
+];
+
+DropdownButton<int>(
+  items: clubs
+      .map((club) => DropdownMenuItem<int>(
+            value: club['id'] as int,
+            child: Text(club['name'] as String),
+          ))
+      .toList(),
+  onChanged: (value) {},
+);
+```
+
+✅ **Good (using a typed model):**
+```dart
+class Club {
+  final int id;
+  final String name;
+  Club({required this.id, required this.name});
+}
+
+final List<Club> clubs = [
+  Club(id: 1, name: 'Padel Club'),
+  Club(id: 2, name: 'Ace Arena'),
+];
+
+DropdownButton<int>(
+  items: clubs
+      .map((club) => DropdownMenuItem<int>(
+            value: club.id,
+            child: Text(club.name),
+          ))
+      .toList(),
+  onChanged: (value) {},
+);
+```
+
+*If you receive data from an API as a map, convert it to a typed model as soon as possible, before passing it to the UI.*
+
 ## Dart Best Practices
 * **Effective Dart:** Follow the official Effective Dart guidelines
   (https://dart.dev/effective-dart)
@@ -810,7 +865,7 @@ textTheme: const TextTheme(
 ### What to Document
 
 * **Public APIs are a priority:** Always document public APIs.
-* **Consider private APIs:** It's a good idea to document private APIs as well.
+* **Consider private APIs:** It's a    idea to document private APIs as well.
 * **Library-level comments are helpful:** Consider adding a doc comment at the
   library level to provide a general overview.
 * **Include code samples:** Where appropriate, add code samples to illustrate usage.

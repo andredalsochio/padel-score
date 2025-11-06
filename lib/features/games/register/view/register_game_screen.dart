@@ -135,12 +135,7 @@ class _RegisterGameScreenState extends State<RegisterGameScreen> {
                                           : 1.0,
                                       child: SetCard(
                                         setIndex: _activeSet,
-                                        initial: initialScore == null
-                                            ? null
-                                            : {
-                                                'team1': initialScore.team1,
-                                                'team2': initialScore.team2,
-                                              },
+                                        initial: initialScore,
                                         onConfirm: (t1, t2) {
                                           if (!Validators.isValidSetScore(
                                             t1,

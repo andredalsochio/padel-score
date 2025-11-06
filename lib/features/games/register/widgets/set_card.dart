@@ -8,7 +8,7 @@ import 'score_button.dart';
 /// and a confirmation action.
 class SetCard extends StatefulWidget {
   final int setIndex; // zero-based
-  final Map<String, int>? initial;
+  final SetScore? initial;
   final void Function(int team1, int team2) onConfirm;
   final List<AssignedPlayer> players;
   final SetAssignment? assignment; // per-set assignments
@@ -36,8 +36,8 @@ class _SetCardState extends State<SetCard> {
   @override
   void initState() {
     super.initState();
-    team1 = widget.initial?['team1'] ?? 0;
-    team2 = widget.initial?['team2'] ?? 0;
+    team1 = widget.initial?.team1 ?? 0;
+    team2 = widget.initial?.team2 ?? 0;
   }
 
   void _cycleTeam1() {

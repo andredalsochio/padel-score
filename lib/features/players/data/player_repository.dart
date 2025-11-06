@@ -16,10 +16,9 @@ class PlayerRepository {
       throw ArgumentError('Nome do jogador não pode ser vazio');
     }
     // Basic duplicate check (case-insensitive exact match)
-    final existing = await service.listMine(query: trimmed);
+    final existing = await listMine(query: trimmed);
     final hasDuplicate = existing.any(
-      (p) =>
-          (p['name'] as String).toLowerCase().trim() == trimmed.toLowerCase(),
+      (p) => p.name.toLowerCase().trim() == trimmed.toLowerCase(),
     );
     if (hasDuplicate) {
       throw StateError('Já existe um jogador com este nome');

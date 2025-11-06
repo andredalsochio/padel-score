@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../../players/data/player_model.dart';
 
 class AddPlayerSheet extends StatefulWidget {
-  final Future<List<Map<String, dynamic>>> Function(String query) onSearch;
-  final Future<Map<String, dynamic>> Function(String name) onCreate;
-  final ValueChanged<Map<String, dynamic>> onSelect;
+  final Future<List<PlayerModel>> Function(String query) onSearch;
+  final Future<PlayerModel> Function(String name) onCreate;
+  final ValueChanged<PlayerModel> onSelect;
 
   const AddPlayerSheet({
     super.key,
@@ -18,7 +19,7 @@ class AddPlayerSheet extends StatefulWidget {
 
 class _AddPlayerSheetState extends State<AddPlayerSheet> {
   final TextEditingController _query = TextEditingController();
-  List<Map<String, dynamic>> _results = const [];
+  List<PlayerModel> _results = const [];
   bool _loading = false;
 
   Future<void> _runSearch() async {
@@ -80,7 +81,7 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
                 itemBuilder: (context, index) {
                   final p = _results[index];
                   return ListTile(
-                    title: Text(p['name'] as String),
+                    title: Text(p.name),
                     onTap: () {
                       widget.onSelect(p);
                       Navigator.of(context).pop();

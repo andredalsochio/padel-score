@@ -7,6 +7,11 @@ class AppConfig {
 
   const AppConfig({required this.supabaseUrl, required this.supabaseAnonKey});
 
+  factory AppConfig.fromMap(Map<String, dynamic> m) => AppConfig(
+    supabaseUrl: (m['supabaseUrl'] as String?)?.trim() ?? '',
+    supabaseAnonKey: (m['supabaseAnonKey'] as String?)?.trim() ?? '',
+  );
+
   static AppConfig? _instance;
 
   static AppConfig get instance {
@@ -23,14 +28,15 @@ class AppConfig {
     // Load from asset file
     final raw = await rootBundle.loadString('assets/config/app_config.json');
     final map = jsonDecode(raw) as Map<String, dynamic>;
-    var url = (map['supabaseUrl'] as String?)?.trim() ?? '';
-    var key = (map['supabaseAnonKey'] as String?)?.trim() ?? '';
+    var config = AppConfig.fromMap(map);
 
     // Allow dart-defines to override if provided
     const envUrl = String.fromEnvironment('SUPABASE_URL');
     const envKey = String.fromEnvironment('SUPABASE_ANON_KEY');
-    if (envUrl.trim().isNotEmpty) url = envUrl.trim();
-    if (envKey.trim().isNotEmpty) key = envKey.trim();
+    final url = envUrl.trim().isNotEmpty ? envUrl.trim() : config.supabaseUrl;
+    final key = envKey.trim().isNotEmpty
+        ? envKey.trim()
+        : config.supabaseAnonKey;
 
     _instance = AppConfig(supabaseUrl: url, supabaseAnonKey: key);
   }

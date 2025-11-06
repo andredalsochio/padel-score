@@ -22,6 +22,11 @@ class SetPlayerEntry {
 
   const SetPlayerEntry({required this.playerId, this.team});
 
+  factory SetPlayerEntry.fromMap(Map<String, dynamic> m) => SetPlayerEntry(
+    playerId: m['player_id'] as String,
+    team: m['team'] == null ? null : (m['team'] as num).toInt(),
+  );
+
   bool get isResting => team == null;
 
   SetPlayerEntry copyWith({String? playerId, int? team}) =>
