@@ -4,6 +4,30 @@ Each entry must include:
 - File paths or modules modified  
 - Timestamp of the last update  
 
+### Workflow Model
+
+We track work in three phases for each feature/task:
+- Investigation — audit code, dependencies, MCP config, and constraints.
+- Plan — define steps, risks, and acceptance criteria.
+- Execution — implement changes, run quality gates, and record adjustments.
+
+### Tags and Conventions
+- ✅ Done — fully completed step; passes quality gate.
+- 🔄 In Progress — currently being implemented.
+- ⏳ Pending — planned but not started.
+- 🧩 Adjustment Notes — deviations or optimizations introduced.
+
+### Tools & Collaboration
+- Codex/Trae MCPs:
+  - `pg` for DB schema and migrations.
+  - `supabase` for API/auth/storage validation.
+  - `context7` for context enrichment.
+- Collaboration Flow:
+  - AI proposes Investigation → Plan → Execution updates.
+  - Human can comment or request changes; AI integrates feedback in Plan and
+    Execution, then updates this file.
+  - For UI changes, AI opens preview before marking as ✅.
+
 #### 4. Session Recovery
 When a session restarts or reconnects, the AI must automatically read from  
 `.trae/workflow_progress.md` and continue from the last recorded step.
@@ -79,3 +103,17 @@ Ao finalizar qualquer tarefa:
 - Regra de mínimo de jogadores atualizada para 4 para refletir duplas de padel; `PlayersSection` exibe mensagem correspondente.
 - Evitamos dependência de `surfaceVariant` (deprecado) e utilizamos `colorScheme.surfaceContainer*` quando apropriado.
 - Mantivemos responsividade e ergonomia nas seções utilitárias (registro rápido), priorizando clareza.
+
+---
+
+## Documentation Updates — November 2025
+
+- ✅ Investigation: audit de estrutura (`lib/features`, `core/router`, `pubspec.yaml`), perfis Trae e MCPs.
+- ✅ Plan: ajustes incrementais nos três arquivos com foco em alinhamento e não reescrita total.
+- ✅ Execution:
+  - Atualizado `AGENTS.md` com addendum de alinhamento (módulos, Provider, Supabase/go_router, Material 3, ordem MCP, FVM/perfis Trae).
+  - Atualizado `.trae/rules/project_rules.md` com módulos, ambiente, ordem MCP, roteamento e notas de deploy.
+  - Atualizado `.trae/rules/workflow_progress.md` com modelo de workflow, tags e colaboração AI/humano.
+- 🧩 Adjustment Notes:
+  - Optamos por adicionar addendum no `AGENTS.md` ao invés de reescrever seções longas para reduzir risco de divergência e manter compatibilidade com regras globais.
+  - Mantivemos entradas de features existentes e adicionamos uma seção de workflow e documentação ao final para preservar histórico.

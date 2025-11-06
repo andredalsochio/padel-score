@@ -121,3 +121,39 @@ To ensure maintainability and consistency across the app, the following rules ar
 - Use relative imports throughout the project; avoid absolute `package:` imports to self.
 - Keep changes surgical; do not modify unrelated code during refactors.
 - Maintain feature-based MVVM organization with Provider for state.
+
+---
+
+## Module Organization (PadelScore)
+
+- `features/auth` — Supabase auth (Google/Apple/Facebook), session and login.
+- `features/players` — player data/models and presentation widgets.
+- `features/patotas` — groups/clubs management (services, viewmodels, views).
+- `features/games` — game registration, set composition and scoring summary.
+- `features/home` — overview, quick actions and entry experience.
+- `core/router/app_router.dart` — `go_router` setup with auth redirects.
+- `core/config/app_config.dart` — centralized environment/config management.
+
+## Environment & Profiles
+
+- Use FVM with Flutter 3.35.x and Dart 3.6+.
+- Trae profiles in `.trae/config.json`:
+  - `dev`, `dev_ios`, `beta`, `prod` with `dart_defines.*` files.
+- When adding new environment variables, prefer `dart_defines.<env>.json`.
+
+## MCP Usage Order
+
+1. `pg` — Prefer for schema changes, migrations and DB validations.
+2. `supabase` — Validate APIs, RPCs and storage integration.
+3. `context7` — Context enrichment and AI memory alignment.
+
+## Routing & Auth
+
+- Use `go_router` with redirects for authentication (`/login` ↔ intended route).
+- Keep login UX minimalist (single-tap sign-ins) with subtle motion.
+
+## Deployment Notes
+
+- Web dev: `flutter run -d chrome` using the dev profile and defines.
+- iOS dev: use `dev_ios` profile; prefer simulator.
+- Document RPCs and migrations in README, include rollback steps.

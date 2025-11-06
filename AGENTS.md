@@ -11,6 +11,42 @@ mobile platforms.
 > - Project-specific rules for this repository are defined in `.trae/rules/project_rules.md`.  
 > These documents extend and complement the directives in this AGENTS.md, which remains the single source of truth.
 
+---
+
+## PadelScore Alignment (Addendum)
+
+This addendum reflects the current repository structure and practices so the
+general rules remain actionable and aligned with the codebase.
+
+- Feature-based organization:
+  - `features/auth` — Supabase auth and minimalist login UI.
+  - `features/players` — typed models, data and presentation.
+  - `features/patotas` — groups/clubs services, viewmodels and views.
+  - `features/games` — game registration, set composition and scoring summary.
+  - `features/home` — overview and quick actions.
+- Core:
+  - `core/router/app_router.dart` — `go_router` configuration with auth
+    redirects.
+  - `core/config/app_config.dart` — environment and app configuration.
+- Architecture:
+  - MVVM with `provider`. ViewModels are `ChangeNotifier`s exposed via
+    `provider` to the UI; avoid raw maps in UI, prefer typed models.
+- Supabase:
+  - `supabase_flutter` is used for auth and client configuration; redirects
+    handled by `go_router`. Prefer RPCs for complex persistence (e.g.
+    `public.save_game_with_sets`).
+- Material 3 & Color APIs:
+  - Prefer `Color.withValues(alpha: ...)` over `withOpacity(...)`.
+  - Replace deprecated `colorScheme.surfaceVariant` with
+    `surfaceContainer*` levels.
+- MCP usage order:
+  1. `pg` — schema/migrations.
+  2. `supabase` — API/storage validation.
+  3. `context7` — context enrichment.
+- Environment:
+  - Target Flutter 3.35.x and Dart 3.6+ via FVM; use Trae profiles from
+    `.trae/config.json` with `dart_defines.*`.
+
 ## Interaction Guidelines
 * **User Persona:** Assume the user is familiar with programming concepts but
   may be new to Dart.
