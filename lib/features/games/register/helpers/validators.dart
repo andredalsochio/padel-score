@@ -39,10 +39,12 @@ class Validators {
     if (uniqueIds.length != ids.length) return false;
 
     // Fifth player scenario: when total is 5, exactly one resting
-    if (totalRegisteredPlayers == 5 && assignment.restingCount != 1)
+    if (totalRegisteredPlayers == 5 && assignment.restingCount != 1) {
       return false;
-    if (totalRegisteredPlayers < 5 && assignment.restingCount != 0)
+    }
+    if (totalRegisteredPlayers < 5 && assignment.restingCount != 0) {
       return false;
+    }
 
     return true;
   }

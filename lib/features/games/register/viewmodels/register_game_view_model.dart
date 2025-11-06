@@ -9,6 +9,7 @@ import '../../../players/data/player_model.dart';
 import '../services/game_players_service.dart';
 import '../services/scores_service.dart';
 import '../services/score_set_players_service.dart';
+import '../models/patota_item.dart';
 
 class RegisterGameViewModel extends ChangeNotifier {
   final SupabaseClient client;
@@ -46,6 +47,113 @@ class RegisterGameViewModel extends ChangeNotifier {
   SetAssignment? assignmentForSet(int setIndex) => _setAssignments[setIndex];
   Map<int, SetAssignment> get setAssignments =>
       Map.unmodifiable(_setAssignments);
+
+  // Patota selection
+  PatotaItem? _selectedPatota;
+  PatotaItem? get selectedPatota => _selectedPatota;
+
+  /// List user's patotas. Fallback to empty when table is missing.
+  Future<List<PatotaItem>> listPatotas() async {
+    try {
+      final res = await client
+          .from('patotas')
+          .select('id,name')
+          .eq('created_by', client.auth.currentUser!.id)
+          .order('created_at');
+      final maps = List<Map<String, dynamic>>.from(res);
+      return maps.map(PatotaItem.fromMap).toList();
+    } catch (e) {
+      if (kDebugMode) {
+        // Log da falha para diagnóstico (ex.: coluna inexistente, RLS, etc.)
+        print('listPatotas error: $e');
+      }
+      return const [];
+    }
+  }
+
+  /// Create a new patota owned by the current user.
+  /// Returns the created PatotaItem, or null on failure/missing table.
+  Future<PatotaItem?> createPatota({required String name, String? avatarUrl}) async {
+    try {
+      final uid = client.auth.currentUser?.id;
+      if (uid == null) return null;
+      final inserted = await client
+          .from('patotas')
+          .insert({
+            'name': name,
+            'created_by': uid,
+          })
+          .select('id,name')
+          .single();
+      return PatotaItem.fromMap(Map<String, dynamic>.from(inserted));
+    } catch (e) {
+      if (kDebugMode) {
+        print('createPatota error: $e');
+      }
+      return null;
+    }
+  }
+
+  /// Select a patota and load players. If relation table doesn't exist,
+  /// fallback to the user's players list.
+  Future<void> selectPatota(PatotaItem patota) async {
+    _selectedPatota = patota;
+    _assignedPlayers.clear();
+    try {
+      // 1) Busca os IDs de jogadores vinculados à patota
+      final linkRows = await client
+          .from('patota_players')
+          .select('player_id')
+          .eq('patota_id', patota.id)
+          .order('created_at');
+      final ids = List<Map<String, dynamic>>.from(linkRows)
+          .map((r) => r['player_id'] as String)
+          .toList();
+
+      if (ids.isEmpty) {
+        // Patota vazia: nenhum jogador
+        _assignedPlayers.clear();
+      } else {
+        // 2) Carrega nomes dos jogadores pela lista de IDs
+        // Supabase Dart nem sempre expõe `in_`; usamos `or` com múltiplos eq
+        final orClause = ids.map((id) => 'id.eq.$id').join(',');
+        final playersRows = await client
+            .from('players')
+            .select('id,name')
+            .or(orClause);
+        final maps = List<Map<String, dynamic>>.from(playersRows);
+        for (final m in maps) {
+          _assignedPlayers.add(
+            AssignedPlayer(
+              id: m['id'] as String,
+              name: m['name'] as String,
+            ),
+          );
+        }
+      }
+    } catch (_) {
+      // Fallback: use user's players
+      final list = await players.listMine();
+      _assignedPlayers.addAll(
+        list.map((p) => AssignedPlayer(id: p.id, name: p.name)),
+      );
+    }
+    notifyListeners();
+  }
+
+  /// Link a player to a patota (creates a row in `patota_players`).
+  /// Returns true on success, false otherwise. Duplicate links are ignored.
+  Future<bool> addPlayerToPatota(String patotaId, String playerId) async {
+    try {
+      await client
+          .from('patota_players')
+          .insert({'patota_id': patotaId, 'player_id': playerId});
+      return true;
+    } catch (_) {
+      // Ignore duplicates or missing table
+      return false;
+    }
+  }
 
   Future<void> startDraft() async {
     _gameId = await games.createDraft(bestOf: bestOf);
@@ -87,12 +195,29 @@ class RegisterGameViewModel extends ChangeNotifier {
   }
 
   // Optional default team selection at draft level (does not persist per set)
-  void setTeam(String playerId, int team) {
+  /// Set the default team for a player in the draft context.
+  /// Pass null to clear assignment (unassigned).
+  void setTeam(String playerId, int? team) {
     final idx = _assignedPlayers.indexWhere((p) => p.id == playerId);
     if (idx >= 0) {
       _assignedPlayers[idx] = _assignedPlayers[idx].copyWith(team: team);
       notifyListeners();
     }
+  }
+
+  /// Reset all players to no team (used by Teams UI reset action).
+  void resetTeams() {
+    for (var i = 0; i < _assignedPlayers.length; i++) {
+      _assignedPlayers[i] = _assignedPlayers[i].copyWith(team: null);
+    }
+    notifyListeners();
+  }
+
+  /// Derived state: whether both teams have at least one player
+  bool get hasProgressTeams {
+    final a = _assignedPlayers.where((p) => p.team == 1).length;
+    final b = _assignedPlayers.where((p) => p.team == 2).length;
+    return a > 0 && b > 0;
   }
 
   /// Ensure we have a SetAssignment in memory for a given set.
@@ -139,6 +264,19 @@ class RegisterGameViewModel extends ChangeNotifier {
   void removeSet(int setIndex) {
     _sets.remove(setIndex);
     _setAssignments.remove(setIndex);
+    notifyListeners();
+  }
+
+  /// Apply the currently assigned draft teams to a given set's composition.
+  /// This prepares the per-set assignment used by validation and saving.
+  void applyTeamsToSet(int setIndex) {
+    final entries = _assignedPlayers
+        .map((p) => SetPlayerEntry(playerId: p.id, team: p.team))
+        .toList();
+    _setAssignments[setIndex] = SetAssignment(
+      setIndex: setIndex,
+      entries: entries,
+    );
     notifyListeners();
   }
 

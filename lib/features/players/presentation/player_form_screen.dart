@@ -35,8 +35,9 @@ class _PlayerFormScreenState extends State<PlayerFormScreen> {
                 ),
                 textInputAction: TextInputAction.done,
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty)
+                  if (v == null || v.trim().isEmpty) {
                     return 'Informe um nome válido';
+                  }
                   return null;
                 },
               ),

@@ -9,6 +9,7 @@ import '../../features/games/register/view/register_game_screen.dart';
 import '../../features/players/presentation/player_list_screen.dart';
 import '../../features/players/presentation/player_form_screen.dart';
 import '../../features/players/viewmodel/player_viewmodel.dart';
+import '../../features/patotas/view/patotas_management_screen.dart';
 
 GoRouter createAppRouter(AuthViewModel authVm) {
   return GoRouter(
@@ -54,6 +55,11 @@ GoRouter createAppRouter(AuthViewModel authVm) {
             child: const PlayerFormScreen(),
           ),
         ),
+      ),
+      GoRoute(
+        path: '/patotas',
+        pageBuilder: (context, state) =>
+            const MaterialPage<void>(child: PatotasManagementScreen()),
       ),
     ],
   );

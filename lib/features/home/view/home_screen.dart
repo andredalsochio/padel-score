@@ -97,6 +97,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   ActionCard(
+                    heroTag: 'manage_patotas',
+                    title: 'Gerenciar Patotas',
+                    description: 'Crie e edite grupos',
+                    icon: Icons.groups,
+                    gradient: [scheme.primaryContainer, scheme.secondaryContainer],
+                    onTap: () {
+                      context.push('/patotas');
+                    },
+                  ),
+                  ActionCard(
                     heroTag: 'view_ranking',
                     title: 'View Ranking',
                     description: 'Top pairs and players',
