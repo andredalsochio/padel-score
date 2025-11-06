@@ -60,22 +60,16 @@ class TeamDropArea extends StatelessWidget {
                           ?.copyWith(color: isHighlighted ? onBase : null),
                     ),
                   ),
-                  TextButton.icon(
+                  IconButton(
                     onPressed: onReset,
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Resetar'),
+                    tooltip: 'Resetar',
                   ),
                 ],
               ),
               const SizedBox(height: 8),
               if (playerNames.isEmpty)
-                Text(
-                  'Arraste jogadores para cá',
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: isHighlighted ? onBase : null),
-                )
+                const SizedBox.shrink()
               else
                 Wrap(
                   spacing: 8,
