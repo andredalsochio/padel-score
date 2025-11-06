@@ -1,19 +1,79 @@
-# padel_app
+# PadelScore — App de Padel (Flutter + Supabase)
 
-A new Flutter project.
+Aplicativo para gerenciar torneios de padel: cadastro de jogadores, grupos (patotas), registro de jogos por set e ranking.
 
-## Getting Started
+Stack principal:
+- Flutter 3.35.x (Material 3) e Dart 3.6+
+- Supabase (auth, storage e Postgres)
+- MVVM com Provider + GoRouter
+- MCPs: pg (Postgres), supabase (API), context7 (contexto)
 
-This project is a starting point for a Flutter application.
+## Requisitos
+- macOS Apple Silicon (M2) com Flutter 3.35.x via FVM (recomendado)
+- Dart 3.6+
+- Projeto Supabase configurado e credenciais válidas
 
-A few resources to get you started if this is your first Flutter project:
+## Setup rápido
+1) Validar versão
+   ```bash
+   fvm flutter --version
+   # ou
+   flutter --version
+   ```
+2) Instalar dependências
+   ```bash
+   flutter pub get
+   ```
+3) Configurar ambiente
+   - Editar `assets/config/app_config.json` conforme endpoints/keys locais.
+   - Perfis Trae: `dev`, `dev_ios`, `beta`, `prod` em `.trae/config.json` usam `dart_defines.*.json`.
+4) Executar (web)
+   ```bash
+   flutter run -d chrome
+   ```
+5) Executar (iOS — simulador)
+   ```bash
+   flutter run -d ios
+   ```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Perfis e Configurações de Ambiente
+- Perfis definidos em `.trae/config.json`:
+  - `dev`, `dev_ios`, `beta`, `prod` com `dart_defines.<env>.json`.
+- Centralização de config: `core/config/app_config.dart` lê `assets/config/app_config.json`.
+- Ao adicionar variáveis, prefira os arquivos `dart_defines.<env>.json` para consistência.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Arquitetura
+- Feature-based (MVVM com Provider):
+  - `features/auth` — autenticação Supabase e login minimalista.
+  - `features/players` — modelos tipados e UI de jogadores.
+  - `features/patotas` — grupos/clubes (serviços, viewmodels, views).
+  - `features/games` — registro de jogo, composição por set e resumo.
+  - `features/home` — visão geral e ações rápidas.
+- Core:
+  - `core/router/app_router.dart` — GoRouter com redirects de autenticação.
+  - `core/config/app_config.dart` — gestão central de ambiente.
+- Padrões:
+  - Modularização de widgets, um widget público por arquivo.
+  - Imports relativos, nomes em `snake_case` para arquivos.
+
+## Autenticação
+- Fluxo de login minimalista com botões: Google, Apple, Facebook.
+- Redirecionamento via GoRouter: `/login` ↔ rota pretendida.
+- Supabase Flutter para PKCE e sessão; deep links ajustados quando necessário.
+
+## Qualidade
+- Análise:
+  ```bash
+  flutter analyze
+  ```
+- Formatação:
+  ```bash
+  dart format .
+  ```
+- Build Runner (se aplicável):
+  ```bash
+  dart run build_runner build --delete-conflicting-outputs
+  ```
 
 ---
 
@@ -73,3 +133,26 @@ Execute o rollback apenas em ambientes de desenvolvimento ou em produção com j
 - Adicionar controle de `bestOf` (1/3/5) com `SegmentedButton` e feedback visual.
 - Melhorar o feedback de composição válida/ inválida por set com estados e ícones.
 - Considerar transações em lote no app quando offline, com sincronização posterior.
+
+---
+
+## Comandos úteis
+- Rodar web: `flutter run -d chrome`
+- Rodar iOS (simulador): `flutter run -d ios`
+- Atualizar dependências: `flutter pub get`
+- Build Runner: `dart run build_runner build --delete-conflicting-outputs`
+- Analyzer: `flutter analyze`
+
+## Contribuição
+- Mensagens de commit no padrão Conventional Commits (ex.: `feat:`, `fix:`, `docs:`).
+- Branches: `develop` para trabalho contínuo; `main` para releases.
+- Pull Requests com descrição objetiva e checklist de qualidade.
+
+## Troubleshooting
+- Sem remoto Git:
+  ```bash
+  git remote add origin <URL>
+  git push -u origin develop
+  ```
+- Erros de versão do Flutter/Dart: verifique FVM e `flutter --version`.
+- Credenciais Supabase: revisitar `assets/config/app_config.json` e defines.
