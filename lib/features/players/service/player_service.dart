@@ -23,4 +23,24 @@ class PlayerService {
         .single();
     return res;
   }
+
+  Future<Map<String, dynamic>> updateName({
+    required String id,
+    required String name,
+  }) async {
+    final res = await _table()
+        .update({'name': name})
+        .eq('id', id)
+        .eq('created_by', client.auth.currentUser!.id)
+        .select('*')
+        .single();
+    return res;
+  }
+
+  Future<void> delete({required String id}) async {
+    await _table()
+        .delete()
+        .eq('id', id)
+        .eq('created_by', client.auth.currentUser!.id);
+  }
 }

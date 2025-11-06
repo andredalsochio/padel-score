@@ -21,6 +21,8 @@ class PlayerViewModel extends ChangeNotifier {
   String? get errorMessage => _error;
   List<PlayerModel> get players => _players;
   bool get minPlayersMet => _players.length >= 4;
+  int get playerCount => _players.length;
+  List<PlayerModel> get rankedPlayers => List<PlayerModel>.from(_players);
 
   Future<void> _loadInitial() async {
     _setLoading(true);
@@ -50,6 +52,40 @@ class PlayerViewModel extends ChangeNotifier {
     try {
       final p = await repo.create(name: name);
       _players = [..._players, p];
+      _error = null;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = _formatError(e);
+      notifyListeners();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> editPlayer({required String id, required String name}) async {
+    _setLoading(true);
+    try {
+      final updated = await repo.updateName(id: id, name: name);
+      _players = _players.map((p) => p.id == id ? updated : p).toList();
+      _error = null;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _error = _formatError(e);
+      notifyListeners();
+      return false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<bool> removePlayer(String id) async {
+    _setLoading(true);
+    try {
+      await repo.delete(id: id);
+      _players = _players.where((p) => p.id != id).toList();
       _error = null;
       notifyListeners();
       return true;

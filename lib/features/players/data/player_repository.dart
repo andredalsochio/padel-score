@@ -26,4 +26,17 @@ class PlayerRepository {
     final res = await service.create(trimmed);
     return PlayerModel.fromMap(res);
   }
+
+  Future<PlayerModel> updateName({required String id, required String name}) async {
+    final trimmed = name.trim();
+    if (trimmed.isEmpty) {
+      throw ArgumentError('Nome não pode ser vazio');
+    }
+    final res = await service.updateName(id: id, name: trimmed);
+    return PlayerModel.fromMap(res);
+  }
+
+  Future<void> delete({required String id}) async {
+    await service.delete(id: id);
+  }
 }
