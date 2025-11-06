@@ -34,7 +34,10 @@ class AuthService {
     );
   }
 
-  Future<void> signInWithPassword({required String email, required String password}) async {
+  Future<void> signInWithPassword({
+    required String email,
+    required String password,
+  }) async {
     await client.auth.signInWithPassword(email: email, password: password);
   }
 

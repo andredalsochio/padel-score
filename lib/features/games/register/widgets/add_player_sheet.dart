@@ -88,7 +88,7 @@ class _AddPlayerSheetState extends State<AddPlayerSheet> {
                   );
                 },
               ),
-            )
+            ),
           ],
         ),
       ),

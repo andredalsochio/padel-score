@@ -28,27 +28,23 @@ GoRouter createAppRouter(AuthViewModel authVm) {
     routes: <RouteBase>[
       GoRoute(
         path: '/login',
-        pageBuilder: (context, state) => const MaterialPage<void>(
-          child: LoginScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            const MaterialPage<void>(child: LoginScreen()),
       ),
       GoRoute(
         path: '/home',
-        pageBuilder: (context, state) => const MaterialPage<void>(
-          child: HomeScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            const MaterialPage<void>(child: HomeScreen()),
       ),
       GoRoute(
         path: '/games/register',
-        pageBuilder: (context, state) => const MaterialPage<void>(
-          child: RegisterGameScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            const MaterialPage<void>(child: RegisterGameScreen()),
       ),
       GoRoute(
         path: '/players',
-        pageBuilder: (context, state) => const MaterialPage<void>(
-          child: PlayerListScreen(),
-        ),
+        pageBuilder: (context, state) =>
+            const MaterialPage<void>(child: PlayerListScreen()),
       ),
       GoRoute(
         path: '/players/new',

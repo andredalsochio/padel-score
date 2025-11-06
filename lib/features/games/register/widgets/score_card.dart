@@ -18,7 +18,9 @@ class ScoreCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final bg = selected ? scheme.primaryContainer : RegisterStyles.surfaceLow(scheme);
+    final bg = selected
+        ? scheme.primaryContainer
+        : RegisterStyles.surfaceLow(scheme);
     final fg = selected ? scheme.onPrimaryContainer : scheme.onSurface;
     return Material(
       color: bg,
@@ -31,9 +33,19 @@ class ScoreCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('$team1', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: fg)),
+              Text(
+                '$team1',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(color: fg),
+              ),
               const Text('—'),
-              Text('$team2', style: Theme.of(context).textTheme.titleLarge?.copyWith(color: fg)),
+              Text(
+                '$team2',
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(color: fg),
+              ),
             ],
           ),
         ),

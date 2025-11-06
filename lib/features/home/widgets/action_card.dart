@@ -53,7 +53,10 @@ class _ActionCardState extends State<ActionCard> {
               margin: const EdgeInsets.symmetric(horizontal: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
-                gradient: HomeGradients.card(widget.gradient.first, widget.gradient.last),
+                gradient: HomeGradients.card(
+                  widget.gradient.first,
+                  widget.gradient.last,
+                ),
                 boxShadow: [HomeShadows.deeper()],
               ),
               child: Padding(

@@ -24,7 +24,9 @@ class ActionsBar extends StatelessWidget {
           child: FilledButton.icon(
             onPressed: (!saving && canSave) ? onSave : null,
             icon: const Icon(Icons.save_outlined),
-            label: saving ? const Text('Salvando...') : const Text('Salvar jogo'),
+            label: saving
+                ? const Text('Salvando...')
+                : const Text('Salvar jogo'),
           ),
         ),
         const SizedBox(width: 12),
@@ -32,7 +34,9 @@ class ActionsBar extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: deleting ? null : onDelete,
             icon: const Icon(Icons.delete_outline),
-            label: deleting ? const Text('Excluindo...') : const Text('Excluir rascunho'),
+            label: deleting
+                ? const Text('Excluindo...')
+                : const Text('Excluir rascunho'),
           ),
         ),
       ],

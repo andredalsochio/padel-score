@@ -18,7 +18,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _rankingExpanded = false;
-  final PageController _matchesController = PageController(viewportFraction: 0.92);
+  final PageController _matchesController = PageController(
+    viewportFraction: 0.92,
+  );
 
   @override
   void dispose() {
@@ -63,7 +65,10 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: const SectionHeader(title: 'Quick Actions', icon: Icons.flash_on),
+              child: const SectionHeader(
+                title: 'Quick Actions',
+                icon: Icons.flash_on,
+              ),
             ),
           ),
           SliverToBoxAdapter(
@@ -111,7 +116,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     gradient: [scheme.primary, scheme.tertiary],
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Tournaments — coming soon')),
+                        const SnackBar(
+                          content: Text('Tournaments — coming soon'),
+                        ),
                       );
                     },
                   ),
@@ -124,7 +131,10 @@ class _HomeScreenState extends State<HomeScreen> {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-              child: const SectionHeader(title: 'Recent Matches', icon: Icons.history),
+              child: const SectionHeader(
+                title: 'Recent Matches',
+                icon: Icons.history,
+              ),
             ),
           ),
           SliverToBoxAdapter(
@@ -149,7 +159,8 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
               child: RankingSummaryCard(
                 expanded: _rankingExpanded,
-                onToggle: () => setState(() => _rankingExpanded = !_rankingExpanded),
+                onToggle: () =>
+                    setState(() => _rankingExpanded = !_rankingExpanded),
               ),
             ),
           ),

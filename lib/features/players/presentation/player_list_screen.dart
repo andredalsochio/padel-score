@@ -35,7 +35,9 @@ class PlayerListScreen extends StatelessWidget {
                   if (!vm.minPlayersMet)
                     MaterialBanner(
                       backgroundColor: scheme.surfaceContainerLow,
-                      content: const Text('Cadastre pelo menos 4 jogadores para iniciar partidas.'),
+                      content: const Text(
+                        'Cadastre pelo menos 4 jogadores para iniciar partidas.',
+                      ),
                       leadingPadding: const EdgeInsets.only(right: 8),
                       leading: const Icon(Icons.info_outline),
                       actions: [
@@ -54,9 +56,16 @@ class PlayerListScreen extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          Icon(Icons.group, size: 48, color: scheme.onSurfaceVariant),
+                          Icon(
+                            Icons.group,
+                            size: 48,
+                            color: scheme.onSurfaceVariant,
+                          ),
                           const SizedBox(height: 12),
-                          Text('Nenhum jogador cadastrado ainda', style: Theme.of(context).textTheme.titleMedium),
+                          Text(
+                            'Nenhum jogador cadastrado ainda',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
                           const SizedBox(height: 8),
                           Text(
                             'Toque em Adicionar para criar seu primeiro jogador.',
@@ -70,7 +79,11 @@ class PlayerListScreen extends StatelessWidget {
                     ...players.map(
                       (p) => Card(
                         child: ListTile(
-                          leading: CircleAvatar(child: Text(p.name.isNotEmpty ? p.name[0].toUpperCase() : '?')),
+                          leading: CircleAvatar(
+                            child: Text(
+                              p.name.isNotEmpty ? p.name[0].toUpperCase() : '?',
+                            ),
+                          ),
                           title: Text(p.name),
                         ),
                       ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'score_grid.dart';
 import 'sets_summary.dart';
+import '../models/set_assignment.dart';
 
 class ScoresSection extends StatelessWidget {
-  final Map<int, Map<String, int>> sets;
+  final Map<int, SetScore> sets;
   final void Function(int setIndex, int team1, int team2) onSelect;
   final void Function(int setIndex) onRemove;
 
@@ -22,28 +23,37 @@ class ScoresSection extends StatelessWidget {
       children: [
         Text('Sets', style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 8),
-        ...setIndices.map((i) => Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(child: Text('Set ${i + 1}', style: Theme.of(context).textTheme.titleMedium)),
-                    if (sets.containsKey(i))
-                      IconButton(
-                        icon: const Icon(Icons.close),
-                        onPressed: () => onRemove(i),
-                        tooltip: 'Remover set',
-                      )
-                  ],
-                ),
-                ScoreGrid(
-                  setIndex: i,
-                  selected: sets[i],
-                  onSelect: (a, b) => onSelect(i, a, b),
-                ),
-                const SizedBox(height: 12),
-              ],
-            )),
+        ...setIndices.map(
+          (i) => Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Set ${i + 1}',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ),
+                  if (sets.containsKey(i))
+                    IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => onRemove(i),
+                      tooltip: 'Remover set',
+                    ),
+                ],
+              ),
+              ScoreGrid(
+                setIndex: i,
+                selected: sets[i] != null
+                    ? {'team1': sets[i]!.team1, 'team2': sets[i]!.team2}
+                    : null,
+                onSelect: (a, b) => onSelect(i, a, b),
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        ),
         SetsSummary(sets: sets),
       ],
     );

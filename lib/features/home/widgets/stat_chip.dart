@@ -21,7 +21,10 @@ class StatChip extends StatelessWidget {
         children: [
           Text(label, style: text.bodySmall),
           const SizedBox(width: 6),
-          Text(value, style: text.bodySmall?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            value,
+            style: text.bodySmall?.copyWith(fontWeight: FontWeight.w700),
+          ),
         ],
       ),
     );

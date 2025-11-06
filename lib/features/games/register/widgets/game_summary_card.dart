@@ -1,15 +1,25 @@
 import 'package:flutter/material.dart';
 import '../helpers/validators.dart';
+import '../models/set_assignment.dart';
 
 class GameSummaryCard extends StatelessWidget {
-  final Map<int, Map<String, int>> sets;
+  final Map<int, SetScore> sets;
+  final Map<int, SetAssignment>? assignments;
+  final int totalPlayers;
   final VoidCallback onSaveGame;
-  const GameSummaryCard({super.key, required this.sets, required this.onSaveGame});
+  const GameSummaryCard({
+    super.key,
+    required this.sets,
+    this.assignments,
+    required this.totalPlayers,
+    required this.onSaveGame,
+  });
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final entries = sets.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
+    final entries = sets.entries.toList()
+      ..sort((a, b) => a.key.compareTo(b.key));
     final winner = _winner(entries);
 
     return AnimatedSlide(
@@ -30,7 +40,7 @@ class GameSummaryCard extends StatelessWidget {
                 color: scheme.shadow.withValues(alpha: 0.08),
                 blurRadius: 12,
                 offset: const Offset(0, 6),
-              )
+              ),
             ],
           ),
           child: Column(
@@ -38,17 +48,26 @@ class GameSummaryCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Text('🏆 Final Score', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                  const Text(
+                    '🏆 Final Score',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
                   const Spacer(),
                   if (winner != null)
-                    Chip(label: Text('Winner: Team ${winner == 1 ? 'A' : 'B'}')),
+                    Chip(
+                      label: Text('Winner: Team ${winner == 1 ? 'A' : 'B'}'),
+                    ),
                 ],
               ),
               const SizedBox(height: 8),
-              ...entries.map((e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Text('Set ${e.key + 1}: ${e.value['team1']}–${e.value['team2']}'),
-                  )),
+              ...entries.map(
+                (e) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 2),
+                  child: Text(
+                    'Set ${e.key + 1}: ${e.value.team1}–${e.value.team2}',
+                  ),
+                ),
+              ),
               const SizedBox(height: 12),
               Align(
                 alignment: Alignment.centerRight,
@@ -64,12 +83,21 @@ class GameSummaryCard extends StatelessWidget {
     );
   }
 
-  int? _winner(List<MapEntry<int, Map<String, int>>> entries) {
+  int? _winner(List<MapEntry<int, SetScore>> entries) {
     // Best of X winner by majority of sets
     int winsA = 0;
     int winsB = 0;
     for (final e in entries) {
-      final w = Validators.winnerFromSet(e.value['team1']!, e.value['team2']!);
+      // Consider only valid sets with valid composition
+      final assign = assignments?[e.key];
+      final score = e.value;
+      if (assign == null) continue;
+      final compOk = Validators.hasValidSetComposition(
+        assign,
+        totalRegisteredPlayers: totalPlayers,
+      );
+      if (!compOk) continue;
+      final w = Validators.winnerFromSet(score.team1, score.team2);
       if (w == 1) {
         winsA++;
       } else if (w == 2) {

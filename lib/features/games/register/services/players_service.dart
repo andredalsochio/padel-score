@@ -18,10 +18,10 @@ class PlayersService {
   }
 
   Future<Map<String, dynamic>> create(String name) async {
-    final res = await _table().insert({
-      'name': name,
-      'created_by': client.auth.currentUser!.id,
-    }).select('*').single();
+    final res = await _table()
+        .insert({'name': name, 'created_by': client.auth.currentUser!.id})
+        .select('*')
+        .single();
     return res;
   }
 }

@@ -35,7 +35,8 @@ class _PlayerFormScreenState extends State<PlayerFormScreen> {
                 ),
                 textInputAction: TextInputAction.done,
                 validator: (v) {
-                  if (v == null || v.trim().isEmpty) return 'Informe um nome válido';
+                  if (v == null || v.trim().isEmpty)
+                    return 'Informe um nome válido';
                   return null;
                 },
               ),
@@ -50,14 +51,24 @@ class _PlayerFormScreenState extends State<PlayerFormScreen> {
                         if (!context.mounted) return;
                         final messenger = ScaffoldMessenger.of(context);
                         if (ok) {
-                          messenger.showSnackBar(const SnackBar(content: Text('Jogador salvo')));
+                          messenger.showSnackBar(
+                            const SnackBar(content: Text('Jogador salvo')),
+                          );
                           Navigator.of(context).pop();
                         } else {
-                          messenger.showSnackBar(SnackBar(content: Text(vm.errorMessage ?? 'Erro ao salvar')));
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                vm.errorMessage ?? 'Erro ao salvar',
+                              ),
+                            ),
+                          );
                         }
                       },
                 icon: const Icon(Icons.save),
-                label: vm.loading ? const Text('Salvando...') : const Text('Salvar'),
+                label: vm.loading
+                    ? const Text('Salvando...')
+                    : const Text('Salvar'),
               ),
             ],
           ),

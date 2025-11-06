@@ -7,7 +7,10 @@ class GamePlayersService {
   PostgrestQueryBuilder _table() => client.from('game_players');
 
   Future<List<Map<String, dynamic>>> listByGame(String gameId) async {
-    final res = await _table().select('*').eq('game_id', gameId).order('created_at');
+    final res = await _table()
+        .select('*')
+        .eq('game_id', gameId)
+        .order('created_at');
     return List<Map<String, dynamic>>.from(res);
   }
 

@@ -3,11 +3,15 @@ import '../helpers/home_styles.dart';
 import 'stat_chip.dart';
 
 class RankingSummaryCard extends StatelessWidget {
-  const RankingSummaryCard({super.key, required this.expanded, required this.onToggle});
+  const RankingSummaryCard({
+    super.key,
+    required this.expanded,
+    required this.onToggle,
+  });
   final bool expanded;
   final VoidCallback onToggle;
 
-  @override 
+  @override
   Widget build(BuildContext context) {
     final text = Theme.of(context).textTheme;
     final scheme = Theme.of(context).colorScheme;
@@ -34,7 +38,9 @@ class RankingSummaryCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     'Your Ranking Summary',
-                    style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                    style: text.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                   const Spacer(),
                   Icon(

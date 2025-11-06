@@ -26,11 +26,10 @@ class _RegisterGameScreenState extends State<RegisterGameScreen> {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return ChangeNotifierProvider(
-      create: (_) => RegisterGameViewModel(Supabase.instance.client)..startDraft(),
+      create: (_) =>
+          RegisterGameViewModel(Supabase.instance.client)..startDraft(),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Registrar Jogo'),
-        ),
+        appBar: AppBar(title: const Text('Registrar Jogo')),
         body: Consumer<RegisterGameViewModel>(
           builder: (context, vm, _) {
             return SingleChildScrollView(
@@ -84,11 +83,16 @@ class _RegisterGameScreenState extends State<RegisterGameScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Placar', style: Theme.of(context).textTheme.titleLarge),
+                        Text(
+                          'Placar',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                         const SizedBox(height: 8),
                         if (vm.assignedPlayers.length < 4) ...[
                           MaterialBanner(
-                            content: const Text('Cadastre e selecione pelo menos 4 jogadores para definir o placar.'),
+                            content: const Text(
+                              'Cadastre e selecione pelo menos 4 jogadores para definir o placar.',
+                            ),
                             leading: const Icon(Icons.warning_amber_outlined),
                             actions: [
                               TextButton(
@@ -117,25 +121,48 @@ class _RegisterGameScreenState extends State<RegisterGameScreen> {
                           child: Builder(
                             key: ValueKey(_activeSet),
                             builder: (context) {
-                              final initial = vm.sets[_activeSet];
+                              final initialScore = vm.sets[_activeSet];
+                              // Preload per-set assignments
+                              vm.ensureAssignmentLoaded(_activeSet);
                               return Column(
                                 children: [
                                   // One active set card
                                   IgnorePointer(
                                     ignoring: vm.assignedPlayers.length < 4,
                                     child: Opacity(
-                                      opacity: vm.assignedPlayers.length < 4 ? 0.5 : 1.0,
+                                      opacity: vm.assignedPlayers.length < 4
+                                          ? 0.5
+                                          : 1.0,
                                       child: SetCard(
                                         setIndex: _activeSet,
-                                        initial: initial,
+                                        initial: initialScore == null
+                                            ? null
+                                            : {
+                                                'team1': initialScore.team1,
+                                                'team2': initialScore.team2,
+                                              },
                                         onConfirm: (t1, t2) {
-                                          if (!Validators.isValidSetScore(t1, t2)) return;
+                                          if (!Validators.isValidSetScore(
+                                            t1,
+                                            t2,
+                                          ))
+                                            return;
                                           vm.selectScore(_activeSet, t1, t2);
                                           HapticFeedback.lightImpact();
                                           if (_activeSet + 1 < vm.bestOf) {
                                             setState(() => _activeSet++);
                                           }
                                         },
+                                        players: vm.assignedPlayers,
+                                        assignment: vm.assignmentForSet(
+                                          _activeSet,
+                                        ),
+                                        onSetPlayerTeam: (pid, team) =>
+                                            vm.setTeamForSet(
+                                              _activeSet,
+                                              pid,
+                                              team,
+                                            ),
                                       ),
                                     ),
                                   ),
@@ -151,6 +178,8 @@ class _RegisterGameScreenState extends State<RegisterGameScreen> {
                         if (vm.sets.length >= vm.bestOf)
                           GameSummaryCard(
                             sets: vm.sets,
+                            assignments: vm.setAssignments,
+                            totalPlayers: vm.assignedPlayers.length,
                             onSaveGame: () async {
                               HapticFeedback.heavyImpact();
                               await vm.saveGame();

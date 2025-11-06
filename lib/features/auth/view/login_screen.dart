@@ -32,10 +32,9 @@ class _LoginScreenState extends State<LoginScreen>
       curve: Curves.easeOutCubic,
     );
     _slideUp = Tween<Offset>(begin: const Offset(0, 0.06), end: Offset.zero)
-        .animate(CurvedAnimation(
-      parent: _introController,
-      curve: Curves.easeOutCubic,
-    ));
+        .animate(
+          CurvedAnimation(parent: _introController, curve: Curves.easeOutCubic),
+        );
     _introController.forward();
 
     // Background ambiance animation (slow, subtle)
@@ -43,10 +42,7 @@ class _LoginScreenState extends State<LoginScreen>
       vsync: this,
       duration: const Duration(seconds: 10),
     )..repeat(reverse: true);
-    _bgAnim = CurvedAnimation(
-      parent: _bgController,
-      curve: Curves.easeInOut,
-    );
+    _bgAnim = CurvedAnimation(parent: _bgController, curve: Curves.easeInOut);
   }
 
   @override
@@ -94,12 +90,20 @@ class _LoginScreenState extends State<LoginScreen>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.lerp(
-                            Alignment.topLeft, Alignment.bottomLeft, t)!,
+                          Alignment.topLeft,
+                          Alignment.bottomLeft,
+                          t,
+                        )!,
                         end: Alignment.lerp(
-                            Alignment.bottomRight, Alignment.topRight, t)!,
+                          Alignment.bottomRight,
+                          Alignment.topRight,
+                          t,
+                        )!,
                         colors: [
                           colorScheme.primaryContainer.withValues(alpha: 0.25),
-                          colorScheme.secondaryContainer.withValues(alpha: 0.20),
+                          colorScheme.secondaryContainer.withValues(
+                            alpha: 0.20,
+                          ),
                           colorScheme.tertiaryContainer.withValues(alpha: 0.18),
                         ],
                       ),
@@ -120,25 +124,28 @@ class _LoginScreenState extends State<LoginScreen>
                           color: colorScheme.primary.withValues(alpha: 0.20),
                           size: isWide ? 220 : 160,
                           alignment: Alignment.lerp(
-                              const Alignment(-0.8, -0.6),
-                              const Alignment(-0.6, -0.4),
-                              t)!,
+                            const Alignment(-0.8, -0.6),
+                            const Alignment(-0.6, -0.4),
+                            t,
+                          )!,
                         ),
                         _BlurBubble(
                           color: colorScheme.secondary.withValues(alpha: 0.18),
                           size: isWide ? 180 : 140,
                           alignment: Alignment.lerp(
-                              const Alignment(0.7, -0.5),
-                              const Alignment(0.6, -0.3),
-                              1 - t)!,
+                            const Alignment(0.7, -0.5),
+                            const Alignment(0.6, -0.3),
+                            1 - t,
+                          )!,
                         ),
                         _BlurBubble(
                           color: colorScheme.tertiary.withValues(alpha: 0.16),
                           size: isWide ? 200 : 150,
                           alignment: Alignment.lerp(
-                              const Alignment(0.4, 0.7),
-                              const Alignment(0.6, 0.6),
-                              t)!,
+                            const Alignment(0.4, 0.7),
+                            const Alignment(0.6, 0.6),
+                            t,
+                          )!,
                         ),
                       ],
                     );
@@ -258,7 +265,11 @@ class _EmailAuthFormState extends State<_EmailAuthForm> {
     return null;
   }
 
-  InputDecoration _decoration(BuildContext context, String label, {Widget? suffix}) {
+  InputDecoration _decoration(
+    BuildContext context,
+    String label, {
+    Widget? suffix,
+  }) {
     final scheme = Theme.of(context).colorScheme;
     return InputDecoration(
       labelText: label,
@@ -267,7 +278,9 @@ class _EmailAuthFormState extends State<_EmailAuthForm> {
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: scheme.outlineVariant.withValues(alpha: 0.5)),
+        borderSide: BorderSide(
+          color: scheme.outlineVariant.withValues(alpha: 0.5),
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
@@ -288,8 +301,9 @@ class _EmailAuthFormState extends State<_EmailAuthForm> {
       mainAxisSize: MainAxisSize.min,
       children: [
         AnimatedCrossFade(
-          crossFadeState:
-              _isRegister ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          crossFadeState: _isRegister
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
           duration: const Duration(milliseconds: 250),
           firstCurve: Curves.easeOutCubic,
           secondCurve: Curves.easeOutCubic,
@@ -317,8 +331,11 @@ class _EmailAuthFormState extends State<_EmailAuthForm> {
                     context,
                     'Senha',
                     suffix: IconButton(
-                      icon: Icon(_loginObscure ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () => setState(() => _loginObscure = !_loginObscure),
+                      icon: Icon(
+                        _loginObscure ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () =>
+                          setState(() => _loginObscure = !_loginObscure),
                     ),
                   ),
                 ),
@@ -336,7 +353,8 @@ class _EmailAuthFormState extends State<_EmailAuthForm> {
                     onPressed: widget.loading
                         ? null
                         : () async {
-                            if (_loginFormKey.currentState?.validate() ?? false) {
+                            if (_loginFormKey.currentState?.validate() ??
+                                false) {
                               await authVm.signInWithPassword(
                                 _loginEmailCtrl.text.trim(),
                                 _loginPassCtrl.text,
@@ -351,7 +369,9 @@ class _EmailAuthFormState extends State<_EmailAuthForm> {
                           )
                         : Text(
                             'Login',
-                            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                            style: textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                   ),
                 ),
@@ -381,8 +401,11 @@ class _EmailAuthFormState extends State<_EmailAuthForm> {
                     context,
                     'Senha',
                     suffix: IconButton(
-                      icon: Icon(_regObscure ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () => setState(() => _regObscure = !_regObscure),
+                      icon: Icon(
+                        _regObscure ? Icons.visibility : Icons.visibility_off,
+                      ),
+                      onPressed: () =>
+                          setState(() => _regObscure = !_regObscure),
                     ),
                   ),
                 ),
@@ -401,8 +424,14 @@ class _EmailAuthFormState extends State<_EmailAuthForm> {
                     context,
                     'Confirmar senha',
                     suffix: IconButton(
-                      icon: Icon(_regConfirmObscure ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () => setState(() => _regConfirmObscure = !_regConfirmObscure),
+                      icon: Icon(
+                        _regConfirmObscure
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      onPressed: () => setState(
+                        () => _regConfirmObscure = !_regConfirmObscure,
+                      ),
                     ),
                   ),
                 ),
@@ -435,7 +464,9 @@ class _EmailAuthFormState extends State<_EmailAuthForm> {
                           )
                         : Text(
                             'Registrar',
-                            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                            style: textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                   ),
                 ),
@@ -473,16 +504,14 @@ class _GlassCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: scheme.surface.withValues(alpha: 0.35),
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: scheme.outline.withValues(alpha: 0.15),
-            ),
+            border: Border.all(color: scheme.outline.withValues(alpha: 0.15)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.12),
                 blurRadius: 24,
                 spreadRadius: 2,
                 offset: const Offset(0, 8),
-              )
+              ),
             ],
           ),
           child: child,
@@ -512,10 +541,7 @@ class _BlurBubble extends StatelessWidget {
           child: Container(
             width: size,
             height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color,
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: color),
           ),
         ),
       ),

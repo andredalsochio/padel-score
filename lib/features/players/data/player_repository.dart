@@ -17,7 +17,10 @@ class PlayerRepository {
     }
     // Basic duplicate check (case-insensitive exact match)
     final existing = await service.listMine(query: trimmed);
-    final hasDuplicate = existing.any((p) => (p['name'] as String).toLowerCase().trim() == trimmed.toLowerCase());
+    final hasDuplicate = existing.any(
+      (p) =>
+          (p['name'] as String).toLowerCase().trim() == trimmed.toLowerCase(),
+    );
     if (hasDuplicate) {
       throw StateError('Já existe um jogador com este nome');
     }

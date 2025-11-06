@@ -1,3 +1,5 @@
+import '../models/set_assignment.dart';
+
 class Validators {
   const Validators._();
 
@@ -18,5 +20,30 @@ class Validators {
     return team1 > team2 ? 1 : 2;
   }
 
-  static bool hasMinPlayers(int count) => count >= 2;
+  static bool hasMinPlayers(int count) => count >= 4;
+
+  /// Exactly 2 players on team 1, exactly 2 on team 2, none duplicated across teams.
+  /// If there are 5 players registered overall, exactly 1 must be resting in this set.
+  static bool hasValidSetComposition(
+    SetAssignment assignment, {
+    required int totalRegisteredPlayers,
+  }) {
+    // Two per team
+    if (assignment.team1Count != 2) return false;
+    if (assignment.team2Count != 2) return false;
+
+    // No player can be in both teams in the same set (implicit by single team per entry)
+    // Ensure no duplicates in entries list
+    final ids = assignment.entries.map((e) => e.playerId).toList();
+    final uniqueIds = ids.toSet();
+    if (uniqueIds.length != ids.length) return false;
+
+    // Fifth player scenario: when total is 5, exactly one resting
+    if (totalRegisteredPlayers == 5 && assignment.restingCount != 1)
+      return false;
+    if (totalRegisteredPlayers < 5 && assignment.restingCount != 0)
+      return false;
+
+    return true;
+  }
 }

@@ -15,8 +15,10 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 2))
-      ..repeat();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat();
   }
 
   @override
@@ -34,7 +36,11 @@ class _ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
         final t = _controller.value;
         return DecoratedBox(
           decoration: BoxDecoration(
-            gradient: HomeGradients.shimmer(t, scheme.surface, scheme.surfaceContainerHighest),
+            gradient: HomeGradients.shimmer(
+              t,
+              scheme.surface,
+              scheme.surfaceContainerHighest,
+            ),
           ),
           child: child,
         );

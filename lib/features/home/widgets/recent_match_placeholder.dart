@@ -58,7 +58,7 @@ class RecentMatchPlaceholder extends StatelessWidget {
                     color: scheme.onSurface.withValues(alpha: 0.6),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),

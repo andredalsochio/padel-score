@@ -40,12 +40,16 @@ class PlayerCard extends StatelessWidget {
                         ChoiceChip(
                           label: const Text('Time 1'),
                           selected: team == 1,
-                          onSelected: onSetTeam == null ? null : (v) => onSetTeam!(1),
+                          onSelected: onSetTeam == null
+                              ? null
+                              : (v) => onSetTeam!(1),
                         ),
                         ChoiceChip(
                           label: const Text('Time 2'),
                           selected: team == 2,
-                          onSelected: onSetTeam == null ? null : (v) => onSetTeam!(2),
+                          onSelected: onSetTeam == null
+                              ? null
+                              : (v) => onSetTeam!(2),
                         ),
                       ],
                     ),

@@ -46,3 +46,36 @@ Ao finalizar qualquer tarefa:
 - Optamos por `go_router` para redirects declarativos de autenticação, garantindo fluxo simples e consistente com web.
 - Mobile: usamos o esquema padrão `io.supabase.flutter://login-callback/` suportado por `supabase_flutter` para PKCE; ajustes no AndroidManifest/Info.plist serão feitos quando integrarmos deep links explicitamente.
 - Mantivemos o tema básico Material 3 aqui; fontes e personalizações avançadas ficam para uma etapa posterior, mantendo foco na autenticação e UX minimalista.
+
+---
+
+## Feature: Registro de Jogo — Composição por Set e Pontuação
+
+- Status geral: 🔄 In Progress
+- Última atualização: 2025-11-06T00:00:00Z
+
+### Passos e Status
+- ✅ Modelos tipados: `AssignedPlayer`, `SetAssignment`, `SetScore`
+- ✅ ViewModel: exposição de `setAssignments`, preload por set (`ensureAssignmentLoaded`) e mapeamento de placar inicial
+- ✅ UI: `SetCard` recebe `players`, `assignment` e `onSetPlayerTeam`; gating por mínimo de 4 jogadores
+- ✅ Resumo: `SetsSummary` e `GameSummaryCard` atualizados para trabalhar com `SetScore` e validação de composição
+- ✅ Persistência: tabela `score_set_players` criada e RPC `save_game_with_sets` disponível no Supabase
+- ✅ Execução: app rodando em web (`flutter run -d chrome`) com preview aberto
+- 🔄 Documentação: adicionar snippet no README com instruções de migração e rollback
+- ⏳ Quality Gate: executar `flutter analyze` e corrigir eventuais avisos/erros
+
+### Arquivos modificados/criados
+- M `lib/features/games/register/view/register_game_screen.dart`
+- M `lib/features/games/register/widgets/players_section.dart`
+- M `lib/features/games/register/widgets/set_card.dart` (se aplicável no workspace)
+- M `lib/features/games/register/widgets/sets_summary.dart`
+- M `lib/features/games/register/widgets/game_summary_card.dart`
+- M `lib/features/games/register/viewmodels/register_game_view_model.dart`
+- A (Supabase) `public.score_set_players` (PK composta, FKs para `games` e `players`)
+- A (Supabase) RPC `public.save_game_with_sets` (plpgsql)
+
+### 🧩 Adjustment Notes
+- Unificação de `PlayerModel`: removida duplicação em `game_models.dart` e uso consolidado do modelo em `features/players/data`.
+- Regra de mínimo de jogadores atualizada para 4 para refletir duplas de padel; `PlayersSection` exibe mensagem correspondente.
+- Evitamos dependência de `surfaceVariant` (deprecado) e utilizamos `colorScheme.surfaceContainer*` quando apropriado.
+- Mantivemos responsividade e ergonomia nas seções utilitárias (registro rápido), priorizando clareza.

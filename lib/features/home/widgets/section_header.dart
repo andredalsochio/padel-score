@@ -13,7 +13,10 @@ class SectionHeader extends StatelessWidget {
       children: [
         Icon(icon, color: scheme.primary),
         const SizedBox(width: 8),
-        Text(title, style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+        Text(
+          title,
+          style: text.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+        ),
       ],
     );
   }

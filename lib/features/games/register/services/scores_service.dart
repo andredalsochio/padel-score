@@ -7,11 +7,20 @@ class ScoresService {
   PostgrestQueryBuilder _table() => client.from('score_sets');
 
   Future<List<Map<String, dynamic>>> listByGame(String gameId) async {
-    final res = await _table().select('*').eq('game_id', gameId).order('set_index');
+    final res = await _table()
+        .select('*')
+        .eq('game_id', gameId)
+        .order('set_index');
     return List<Map<String, dynamic>>.from(res);
   }
 
-  Future<void> upsert(String gameId, int setIndex, int team1, int team2, {int? winnerTeam}) async {
+  Future<void> upsert(
+    String gameId,
+    int setIndex,
+    int team1,
+    int team2, {
+    int? winnerTeam,
+  }) async {
     await _table().upsert({
       'game_id': gameId,
       'set_index': setIndex,

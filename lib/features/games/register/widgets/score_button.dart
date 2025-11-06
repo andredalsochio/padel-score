@@ -45,17 +45,16 @@ class ScoreButton extends StatelessWidget {
             ),
           ],
           border: Border.all(
-            color: highlighted ? scheme.primary.withValues(alpha: 0.24) : scheme.outlineVariant,
+            color: highlighted
+                ? scheme.primary.withValues(alpha: 0.24)
+                : scheme.outlineVariant,
             width: highlighted ? 2 : 1,
           ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              label,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
+            Text(label, style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             AnimatedScale(
               duration: const Duration(milliseconds: 140),
@@ -67,12 +66,15 @@ class ScoreButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   child: Text(
                     '$score',
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ),

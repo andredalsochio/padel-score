@@ -17,8 +17,20 @@ class ScoreGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     // Build common tennis/padel set outcomes
     final options = <List<int>>[
-      [6, 0], [6, 1], [6, 2], [6, 3], [6, 4], [7, 5], [7, 6],
-      [0, 6], [1, 6], [2, 6], [3, 6], [4, 6], [5, 7], [6, 7],
+      [6, 0],
+      [6, 1],
+      [6, 2],
+      [6, 3],
+      [6, 4],
+      [7, 5],
+      [7, 6],
+      [0, 6],
+      [1, 6],
+      [2, 6],
+      [3, 6],
+      [4, 6],
+      [5, 7],
+      [6, 7],
     ];
     return GridView.builder(
       shrinkWrap: true,
@@ -32,7 +44,10 @@ class ScoreGrid extends StatelessWidget {
       itemCount: options.length,
       itemBuilder: (context, index) {
         final o = options[index];
-        final isSelected = selected != null && selected!['team1'] == o[0] && selected!['team2'] == o[1];
+        final isSelected =
+            selected != null &&
+            selected!['team1'] == o[0] &&
+            selected!['team2'] == o[1];
         return ScoreCard(
           team1: o[0],
           team2: o[1],

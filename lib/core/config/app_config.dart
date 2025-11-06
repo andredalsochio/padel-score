@@ -12,7 +12,9 @@ class AppConfig {
   static AppConfig get instance {
     final inst = _instance;
     if (inst == null) {
-      throw StateError('AppConfig not loaded. Call AppConfig.load() before use.');
+      throw StateError(
+        'AppConfig not loaded. Call AppConfig.load() before use.',
+      );
     }
     return inst;
   }

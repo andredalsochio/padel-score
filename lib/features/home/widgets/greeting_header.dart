@@ -25,7 +25,10 @@ class GreetingHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(title, style: text.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+                Text(
+                  title,
+                  style: text.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                ),
                 const SizedBox(height: 6),
                 Text(
                   subtitle,
@@ -46,7 +49,7 @@ class GreetingHeader extends StatelessWidget {
                 child: const Icon(Icons.person, color: Colors.white),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
