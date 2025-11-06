@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/view/login_screen.dart';
 import '../../features/auth/viewmodel/auth_view_model.dart';
 import '../../features/home/view/home_screen.dart';
 import '../../features/games/register/view/register_game_screen.dart';
+import '../../features/players/presentation/player_list_screen.dart';
+import '../../features/players/presentation/player_form_screen.dart';
+import '../../features/players/viewmodel/player_viewmodel.dart';
 
 GoRouter createAppRouter(AuthViewModel authVm) {
   return GoRouter(
@@ -37,6 +42,21 @@ GoRouter createAppRouter(AuthViewModel authVm) {
         path: '/games/register',
         pageBuilder: (context, state) => const MaterialPage<void>(
           child: RegisterGameScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/players',
+        pageBuilder: (context, state) => const MaterialPage<void>(
+          child: PlayerListScreen(),
+        ),
+      ),
+      GoRoute(
+        path: '/players/new',
+        pageBuilder: (context, state) => MaterialPage<void>(
+          child: ChangeNotifierProvider(
+            create: (_) => PlayerViewModel(Supabase.instance.client),
+            child: const PlayerFormScreen(),
+          ),
         ),
       ),
     ],

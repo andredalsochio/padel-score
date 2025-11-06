@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../helpers/validators.dart';
 
 class SetsSummary extends StatelessWidget {
   final Map<int, Map<String, int>> sets;
@@ -14,9 +15,11 @@ class SetsSummary extends StatelessWidget {
       spacing: 8,
       runSpacing: 8,
       children: entries
-          .map((e) => Chip(
-                label: Text('Set ${e.key + 1}: ${e.value['team1']} — ${e.value['team2']}'),
-              ))
+          .map((e) {
+            final w = Validators.winnerFromSet(e.value['team1']!, e.value['team2']!);
+            final winnerLabel = w == null ? '' : ' (Winner: Team ${w == 1 ? 'A' : 'B'})';
+            return Chip(label: Text('✅ Set ${e.key + 1}: ${e.value['team1']}–${e.value['team2']}$winnerLabel'));
+          })
           .toList(),
     );
   }

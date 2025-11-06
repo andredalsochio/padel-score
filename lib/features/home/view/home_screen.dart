@@ -88,9 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     icon: Icons.group_add,
                     gradient: [scheme.secondary, scheme.secondaryContainer],
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Add Players — coming soon')),
-                      );
+                      context.push('/players');
                     },
                   ),
                   ActionCard(
