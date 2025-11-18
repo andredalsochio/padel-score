@@ -10,6 +10,7 @@ import '../services/game_players_service.dart';
 import '../services/scores_service.dart';
 import '../services/score_set_players_service.dart';
 import '../models/patota_item.dart';
+import '../../../players/service/ranking_service.dart';
 
 class RegisterGameViewModel extends ChangeNotifier {
   final SupabaseClient client;
@@ -73,16 +74,16 @@ class RegisterGameViewModel extends ChangeNotifier {
 
   /// Create a new patota owned by the current user.
   /// Returns the created PatotaItem, or null on failure/missing table.
-  Future<PatotaItem?> createPatota({required String name, String? avatarUrl}) async {
+  Future<PatotaItem?> createPatota({
+    required String name,
+    String? avatarUrl,
+  }) async {
     try {
       final uid = client.auth.currentUser?.id;
       if (uid == null) return null;
       final inserted = await client
           .from('patotas')
-          .insert({
-            'name': name,
-            'created_by': uid,
-          })
+          .insert({'name': name, 'created_by': uid})
           .select('id,name')
           .single();
       return PatotaItem.fromMap(Map<String, dynamic>.from(inserted));
@@ -106,9 +107,9 @@ class RegisterGameViewModel extends ChangeNotifier {
           .select('player_id')
           .eq('patota_id', patota.id)
           .order('created_at');
-      final ids = List<Map<String, dynamic>>.from(linkRows)
-          .map((r) => r['player_id'] as String)
-          .toList();
+      final ids = List<Map<String, dynamic>>.from(
+        linkRows,
+      ).map((r) => r['player_id'] as String).toList();
 
       if (ids.isEmpty) {
         // Patota vazia: nenhum jogador
@@ -124,10 +125,7 @@ class RegisterGameViewModel extends ChangeNotifier {
         final maps = List<Map<String, dynamic>>.from(playersRows);
         for (final m in maps) {
           _assignedPlayers.add(
-            AssignedPlayer(
-              id: m['id'] as String,
-              name: m['name'] as String,
-            ),
+            AssignedPlayer(id: m['id'] as String, name: m['name'] as String),
           );
         }
       }
@@ -145,9 +143,10 @@ class RegisterGameViewModel extends ChangeNotifier {
   /// Returns true on success, false otherwise. Duplicate links are ignored.
   Future<bool> addPlayerToPatota(String patotaId, String playerId) async {
     try {
-      await client
-          .from('patota_players')
-          .insert({'patota_id': patotaId, 'player_id': playerId});
+      await client.from('patota_players').insert({
+        'patota_id': patotaId,
+        'player_id': playerId,
+      });
       return true;
     } catch (_) {
       // Ignore duplicates or missing table
@@ -156,7 +155,9 @@ class RegisterGameViewModel extends ChangeNotifier {
   }
 
   Future<void> startDraft() async {
+    debugPrint("[RegisterSave] startDraft bestOf=$bestOf");
     _gameId = await games.createDraft(bestOf: bestOf);
+    debugPrint("[RegisterSave] startDraft created gameId=$_gameId");
     _assignedPlayers.clear();
     _sets.clear();
     _setAssignments.clear();
@@ -170,11 +171,17 @@ class RegisterGameViewModel extends ChangeNotifier {
 
   Future<void> addPlayerToGame(PlayerModel player, {int? team}) async {
     if (_gameId == null) return;
+    debugPrint(
+      "[RegisterSave] addPlayerToGame gameId=$_gameId playerId=${player.id} name='${player.name}' team=$team",
+    );
     await gamePlayers.upsert(_gameId!, player.id, team: team);
     final exists = _assignedPlayers.any((p) => p.id == player.id);
     if (!exists) {
       _assignedPlayers.add(
         AssignedPlayer(id: player.id, name: player.name, team: team),
+      );
+      debugPrint(
+        "[RegisterSave] addPlayerToGame assignedPlayers size=${_assignedPlayers.length}",
       );
     }
     notifyListeners();
@@ -198,9 +205,13 @@ class RegisterGameViewModel extends ChangeNotifier {
   /// Set the default team for a player in the draft context.
   /// Pass null to clear assignment (unassigned).
   void setTeam(String playerId, int? team) {
+    debugPrint("[RegisterSave] setTeam playerId=$playerId team=$team");
     final idx = _assignedPlayers.indexWhere((p) => p.id == playerId);
     if (idx >= 0) {
       _assignedPlayers[idx] = _assignedPlayers[idx].copyWith(team: team);
+      debugPrint(
+        "[RegisterSave] setTeam updated assignedPlayers[$idx] name='${_assignedPlayers[idx].name}' team=${_assignedPlayers[idx].team}",
+      );
       notifyListeners();
     }
   }
@@ -270,9 +281,13 @@ class RegisterGameViewModel extends ChangeNotifier {
   /// Apply the currently assigned draft teams to a given set's composition.
   /// This prepares the per-set assignment used by validation and saving.
   void applyTeamsToSet(int setIndex) {
+    debugPrint("[RegisterSave] applyTeamsToSet setIndex=$setIndex");
     final entries = _assignedPlayers
         .map((p) => SetPlayerEntry(playerId: p.id, team: p.team))
         .toList();
+    debugPrint(
+      "[RegisterSave] applyTeamsToSet entries=${entries.map((e) => {"id": e.playerId, "team": e.team}).toList()}",
+    );
     _setAssignments[setIndex] = SetAssignment(
       setIndex: setIndex,
       entries: entries,
@@ -282,11 +297,17 @@ class RegisterGameViewModel extends ChangeNotifier {
 
   Future<void> persistScores() async {
     if (_gameId == null) return;
+    debugPrint(
+      "[RegisterSave] persistScores gameId=$_gameId sets=${_sets.entries.map((e) => {"index": e.key, "t1": e.value.team1, "t2": e.value.team2}).toList()}",
+    );
     for (final entry in _sets.entries) {
       final setIndex = entry.key;
       final team1 = entry.value.team1;
       final team2 = entry.value.team2;
       final winner = Validators.winnerFromSet(team1, team2);
+      debugPrint(
+        "[RegisterSave] persistScores upsert setIndex=$setIndex team1=$team1 team2=$team2 winner=$winner",
+      );
       await scores.upsert(_gameId!, setIndex, team1, team2, winnerTeam: winner);
     }
   }
@@ -320,33 +341,50 @@ class RegisterGameViewModel extends ChangeNotifier {
     saving = true;
     notifyListeners();
     try {
-      // Try transactional RPC first
-      final payload = _sets.entries.map((e) {
-        final assign = _setAssignments[e.key];
-        return {
-          'set_index': e.key,
-          'team1_games': e.value.team1,
-          'team2_games': e.value.team2,
-          'winner_team': Validators.winnerFromSet(e.value.team1, e.value.team2),
-          'players': assign == null
-              ? []
-              : assign.entries
-                    .map((p) => {'player_id': p.playerId, 'team': p.team})
-                    .toList(),
-        };
-      }).toList();
-
-      await client.rpc(
-        'save_game_with_sets',
-        params: {'game_id': _gameId, 'sets': payload},
+      debugPrint(
+        "[RegisterSave] saveGame begin gameId=$_gameId assignedPlayers=${_assignedPlayers.map((p) => {"id": p.id, "name": p.name, "team": p.team}).toList()} setAssignments=${_setAssignments.map((k, v) => MapEntry(k, v.entries.map((e) => {"id": e.playerId, "team": e.team}).toList()))}",
       );
-    } catch (_) {
-      // Fallback: persist scores sequentially and mark game completed
+      await _persistGamePlayers();
+      await _persistSetPlayers();
       await persistScores();
       await games.updateStatus(_gameId!, 'completed');
+      debugPrint(
+        "[RegisterSave] saveGame completed status updated for gameId=$_gameId",
+      );
+    } catch (e) {
+      debugPrint("[RegisterSave] saveGame error: $e");
     }
     saving = false;
     notifyListeners();
+  }
+
+  Future<void> _persistGamePlayers() async {
+    if (_gameId == null) return;
+    debugPrint(
+      "[RegisterSave] _persistGamePlayers gameId=$_gameId players=${_assignedPlayers.map((p) => {"id": p.id, "name": p.name, "team": p.team}).toList()}",
+    );
+    for (final p in _assignedPlayers) {
+      await gamePlayers.upsert(_gameId!, p.id, team: p.team);
+    }
+  }
+
+  Future<void> _persistSetPlayers() async {
+    if (_gameId == null) return;
+    debugPrint(
+      "[RegisterSave] _persistSetPlayers gameId=$_gameId assignments=${_setAssignments.map((k, v) => MapEntry(k, v.entries.map((e) => {"id": e.playerId, "team": e.team}).toList()))}",
+    );
+    for (final entry in _setAssignments.entries) {
+      final setIndex = entry.key;
+      for (final e in entry.value.entries) {
+        await setPlayers.upsert(_gameId!, setIndex, e.playerId, team: e.team);
+      }
+    }
+  }
+
+  Future<void> updateRankingForGame() async {
+    if (_gameId == null) return;
+    final ranking = RankingService(client);
+    await ranking.updateAfterMatch(_gameId!);
   }
 
   Future<void> deleteGame() async {

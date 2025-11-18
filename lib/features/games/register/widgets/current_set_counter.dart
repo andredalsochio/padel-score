@@ -45,9 +45,9 @@ class _CurrentSetCounterState extends State<CurrentSetCounter> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _CounterCard(label: 'Time A', value: a, onInc: _incA, onDec: _decA),
+              _CounterCard(label: 'Dupla A', value: a, onInc: _incA, onDec: _decA),
               const SizedBox(width: 16),
-              _CounterCard(label: 'Time B', value: b, onInc: _incB, onDec: _decB),
+              _CounterCard(label: 'Dupla B', value: b, onInc: _incB, onDec: _decB),
             ],
           ),
           const SizedBox(height: 16),

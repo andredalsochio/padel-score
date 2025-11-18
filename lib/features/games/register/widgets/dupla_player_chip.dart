@@ -1,32 +1,25 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../helpers/register_styles.dart';
 
-class DraggablePlayerChip extends StatefulWidget {
+class DuplaPlayerChip extends StatefulWidget {
   final String playerId;
   final String name;
   final int? team;
   final VoidCallback? onRemove;
-  const DraggablePlayerChip({
-    super.key,
-    required this.playerId,
-    required this.name,
-    this.team,
-    this.onRemove,
-  });
+  const DuplaPlayerChip({super.key, required this.playerId, required this.name, this.team, this.onRemove});
 
   @override
-  State<DraggablePlayerChip> createState() => _DraggablePlayerChipState();
+  State<DuplaPlayerChip> createState() => _DuplaPlayerChipState();
 }
 
-class _DraggablePlayerChipState extends State<DraggablePlayerChip> {
+class _DuplaPlayerChipState extends State<DuplaPlayerChip> {
   bool _showDelete = false;
   Timer? _hideTimer;
 
   void _showDeleteTemporarily() {
     setState(() => _showDelete = true);
     _hideTimer?.cancel();
-    _hideTimer = Timer(const Duration(milliseconds: 2600), () {
+    _hideTimer = Timer(const Duration(milliseconds: 1600), () {
       if (!mounted) return;
       setState(() => _showDelete = false);
     });
@@ -41,38 +34,34 @@ class _DraggablePlayerChipState extends State<DraggablePlayerChip> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final assignedColor = widget.team == null
-        ? scheme.surfaceContainerLow
-        : (widget.team == 1 ? scheme.primaryContainer : scheme.tertiaryContainer);
-    final onAssignedColor = widget.team == null
-        ? scheme.onSurface
-        : (widget.team == 1 ? scheme.onPrimaryContainer : scheme.onTertiaryContainer);
+    final bg = widget.team == 1
+        ? scheme.primaryContainer
+        : (widget.team == 2 ? scheme.tertiaryContainer : scheme.surfaceContainerLow);
+    final onBg = widget.team == 1
+        ? scheme.onPrimaryContainer
+        : (widget.team == 2 ? scheme.onTertiaryContainer : scheme.onSurface);
+    final initials = _initials(widget.name);
 
     final chip = Chip(
+      avatar: CircleAvatar(backgroundColor: onBg, foregroundColor: bg, child: Text(initials)),
       label: Text(widget.name),
-      backgroundColor: assignedColor,
-      labelStyle: TextStyle(color: onAssignedColor),
+      backgroundColor: bg,
+      labelStyle: TextStyle(color: onBg),
     );
 
     return Draggable<String>(
       data: widget.playerId,
       feedback: Material(
-        color: assignedColor,
-        borderRadius: RegisterStyles.cardRadius,
+        color: bg,
+        borderRadius: BorderRadius.circular(20),
         elevation: 8,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          child: Text(widget.name, style: TextStyle(color: onAssignedColor)),
-        ),
+        child: Padding(padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8), child: Text(widget.name, style: TextStyle(color: onBg))),
       ),
       onDragStarted: () {
         _hideTimer?.cancel();
         setState(() => _showDelete = false);
       },
-      childWhenDragging: Opacity(
-        opacity: 0.4,
-        child: chip,
-      ),
+      childWhenDragging: Opacity(opacity: 0.4, child: chip),
       child: widget.onRemove == null
           ? chip
           : GestureDetector(
@@ -108,5 +97,12 @@ class _DraggablePlayerChipState extends State<DraggablePlayerChip> {
               ),
             ),
     );
+  }
+
+  String _initials(String n) {
+    final parts = n.trim().split(RegExp(r"\s+"));
+    final a = parts.isNotEmpty ? parts.first.characters.first : '';
+    final b = parts.length > 1 ? parts[1].characters.first : '';
+    return (a + b).toUpperCase();
   }
 }

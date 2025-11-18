@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class GamePlayersService {
@@ -15,14 +16,26 @@ class GamePlayersService {
   }
 
   Future<void> upsert(String gameId, String playerId, {int? team}) async {
-    await _table().upsert({
+    debugPrint(
+      "[RegisterSave] game_players.upsert gameId=$gameId playerId=$playerId team=$team",
+    );
+    final payload = {
       'game_id': gameId,
       'player_id': playerId,
       if (team != null) 'team': team,
-    });
+    };
+    final res = await _table().upsert(payload).select('game_id,player_id,team');
+    debugPrint("[RegisterSave] game_players.upsert response: $res");
   }
 
   Future<void> remove(String gameId, String playerId) async {
-    await _table().delete().eq('game_id', gameId).eq('player_id', playerId);
+    debugPrint(
+      "[RegisterSave] game_players.remove gameId=$gameId playerId=$playerId",
+    );
+    final res = await _table()
+        .delete()
+        .eq('game_id', gameId)
+        .eq('player_id', playerId);
+    debugPrint("[RegisterSave] game_players.remove response: $res");
   }
 }

@@ -4,9 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../auth/viewmodel/auth_view_model.dart';
 import '../widgets/greeting_header.dart';
 import '../widgets/section_header.dart';
-import '../widgets/horizontal_cards.dart';
-import '../widgets/action_card.dart';
-import '../widgets/recent_match_placeholder.dart';
+import '../widgets/quick_actions_bar.dart';
+import '../widgets/recent_match_card.dart';
 import '../widgets/ranking_summary_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -64,83 +63,46 @@ class _HomeScreenState extends State<HomeScreen> {
           // Quick Actions section
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
               child: const SectionHeader(
-                title: 'Quick Actions',
+                title: 'Ações rápidas',
                 icon: Icons.flash_on,
               ),
             ),
           ),
           SliverToBoxAdapter(
-            child: SizedBox(
-              height: 160,
-              child: HorizontalCards(
-                children: [
-                  ActionCard(
-                    heroTag: 'register_game',
-                    title: 'Register Game',
-                    description: 'Start a new match now',
-                    icon: Icons.sports_tennis,
-                    gradient: [scheme.primary, scheme.primaryContainer],
-                    onTap: () {
-                      context.push('/games/register');
-                    },
+            child: QuickActionsBar(
+              actions: [
+                QuickAction(
+                  label: 'Registrar Jogo',
+                  icon: Icons.sports_tennis,
+                  onTap: () => context.push('/games/register'),
+                ),
+                QuickAction(
+                  label: 'Jogadores',
+                  icon: Icons.group_add,
+                  onTap: () => context.push('/players'),
+                ),
+                QuickAction(
+                  label: 'Patotas',
+                  icon: Icons.groups,
+                  onTap: () => context.push('/patotas'),
+                ),
+                QuickAction(
+                  label: 'Ranking',
+                  icon: Icons.bar_chart,
+                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Ranking — coming soon')),
                   ),
-                  ActionCard(
-                    heroTag: 'add_players',
-                    title: 'Add Players',
-                    description: 'Invite or create profiles',
-                    icon: Icons.group_add,
-                    gradient: [scheme.secondary, scheme.secondaryContainer],
-                    onTap: () {
-                      context.push('/players');
-                    },
-                  ),
-                  ActionCard(
-                    heroTag: 'manage_patotas',
-                    title: 'Gerenciar Patotas',
-                    description: 'Crie e edite grupos',
-                    icon: Icons.groups,
-                    gradient: [scheme.primaryContainer, scheme.secondaryContainer],
-                    onTap: () {
-                      context.push('/patotas');
-                    },
-                  ),
-                  ActionCard(
-                    heroTag: 'view_ranking',
-                    title: 'View Ranking',
-                    description: 'Top pairs and players',
-                    icon: Icons.bar_chart,
-                    gradient: [scheme.tertiary, scheme.tertiaryContainer],
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Ranking — coming soon')),
-                      );
-                    },
-                  ),
-                  ActionCard(
-                    heroTag: 'tournaments',
-                    title: 'Tournaments',
-                    description: 'Browse and manage',
-                    icon: Icons.emoji_events,
-                    gradient: [scheme.primary, scheme.tertiary],
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Tournaments — coming soon'),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
 
           // Recent Matches section
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 6),
               child: const SectionHeader(
                 title: 'Recent Matches',
                 icon: Icons.history,
@@ -149,14 +111,21 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           SliverToBoxAdapter(
             child: SizedBox(
-              height: 210,
+              height: 170,
               child: PageView.builder(
                 controller: _matchesController,
                 itemCount: 5,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: RecentMatchPlaceholder(index: index),
+                    child: RecentMatchCard(
+                      duoA: 'Joao & Rodrigo',
+                      duoB: 'Andre & Leonardo',
+                      scores: const ['6×0', '4×7', '4×6'],
+                      winnerDuo: index % 2 == 0
+                          ? 'Joao & Rodrigo'
+                          : 'Andre & Leonardo',
+                    ),
                   );
                 },
               ),
@@ -166,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // Ranking Summary expandable card
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 24),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
               child: RankingSummaryCard(
                 expanded: _rankingExpanded,
                 onToggle: () =>
