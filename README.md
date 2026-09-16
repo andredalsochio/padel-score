@@ -1,75 +1,61 @@
-# padel_app
+# Padel Score
 
-A new Flutter project.
+Aplicativo Flutter para registrar partidas de padel, placares e formações de jogadores por set.
 
-## Getting Started
+## Visão geral
 
-This project is a starting point for a Flutter application.
+O app acompanha a partida desde a definição dos jogadores até o registro dos sets. A composição de cada set fica explícita, permitindo consultar o placar e preservar o contexto de quem jogou em cada momento.
 
-A few resources to get you started if this is your first Flutter project:
+## Destaques
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Registro de partidas e placares.
+- Definição da composição dos jogadores por set.
+- Resumo da partida e dos sets.
+- Estado da aplicação organizado com Provider.
+- Navegação declarativa com GoRouter.
+- Persistência transacional no Supabase por meio da RPC `save_game_with_sets`.
+- Testes automatizados para apoiar a evolução da lógica.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Stack
 
----
+- Flutter
+- Dart 3.9+
+- Supabase
+- Provider
+- GoRouter
+- Shared Preferences
 
-## Banco de Dados: Composição por Set e RPC de Salvamento
+## Como executar
 
-Este projeto utiliza Supabase para persistir a composição de jogadores por set e os placares do jogo.
+Pré-requisitos: Flutter SDK instalado e um projeto Supabase configurado para a aplicação.
 
-### Visão geral
-- Tabela: `public.score_set_players` — armazena, por jogo e por set, quais jogadores jogaram e em qual time.
-- RPC: `public.save_game_with_sets` — função PL/pgSQL para salvar um jogo e seus sets de forma transacional.
-
-### Pré‑requisitos
-- Supabase configurado e acessível via MCP (pg/supabase) ou CLI.
-- Flutter 3.35+ e Dart 3.6+ (idealmente via FVM).
-
-### Como verificar se a migração está aplicada
-- Via MCP (preferido): listar tabelas e checar a função
-  - Tabela: `score_set_players` deve existir com PK composta `(game_id, set_index, player_id)` e FKs para `games` e `players`.
-  - Função: `save_game_with_sets` deve aparecer em `public`.
-- Via CLI Supabase:
-  ```bash
-  supabase db dump --local | grep score_set_players
-  # ou inspecione no Studio > Database
-  ```
-
-### SQL (resumo) da tabela `score_set_players`
-```sql
-create table if not exists public.score_set_players (
-  game_id uuid not null references public.games(id),
-  set_index integer not null check (set_index >= 0),
-  player_id uuid not null references public.players(id),
-  team integer check (team = any (array[1,2])),
-  primary key (game_id, set_index, player_id)
-);
+```bash
+flutter pub get
+flutter run
 ```
 
-Observação: RLS pode permanecer desabilitado se o acesso for apenas via funções RPC autenticadas pelo backend; habilite conforme necessidade de segurança.
+Para validar o projeto:
 
-### Habilitar o fluxo no app
-- O `RegisterGameViewModel` já integra os modelos tipados (`AssignedPlayer`, `SetAssignment`, `SetScore`) e carrega as composições por set (`ensureAssignmentLoaded`).
-- A UI (`SetCard`, `SetsSummary`, `GameSummaryCard`) já utiliza os tipos e validações atualizados.
-- Nenhuma ação adicional é necessária além de configurar corretamente as credenciais do Supabase.
-
-### Rollback seguro
-Caso precise reverter a migração:
-```sql
--- Remover RPC se necessário
-drop function if exists public.save_game_with_sets cascade;
-
--- Remover a tabela de composição por set
-drop table if exists public.score_set_players cascade;
+```bash
+flutter analyze
+flutter test
 ```
 
-Execute o rollback apenas em ambientes de desenvolvimento ou em produção com janela de manutenção e backups prévios.
+Configure as credenciais do Supabase conforme os arquivos de configuração do projeto. Não versionar chaves privadas.
 
-### Próximos passos opcionais
-- Adicionar controle de `bestOf` (1/3/5) com `SegmentedButton` e feedback visual.
-- Melhorar o feedback de composição válida/ inválida por set com estados e ícones.
-- Considerar transações em lote no app quando offline, com sincronização posterior.
+## Persistência
+
+A aplicação usa a tabela `public.score_set_players` para armazenar a escalação por jogo e set. A RPC `public.save_game_with_sets` concentra o salvamento do jogo e de seus sets em uma operação transacional.
+
+## Estrutura
+
+```text
+lib/              # Código da aplicação
+assets/config/    # Configurações e recursos
+test/             # Testes
+android/ ios/ web/ # Plataformas suportadas
+```
+
+## Contexto
+
+Projeto público de portfólio que explora desenvolvimento mobile, modelagem de dados e persistência transacional em um produto de placar para partidas de padel.
